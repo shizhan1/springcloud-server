@@ -1,0 +1,50 @@
+#服务端点暴露
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露xxx端点，如需暴露多个，用,分隔；如需暴露所有端点，用'*'
+        include: auditevents,caches,conditions,flyway,health,heapdump,httptrace,info,integrationgraph,jolokia,logfile,loggers,liquibase,metrics,mappings,prometheus,scheduledtasks,sessions,shutdown,threaddump,hystrix.stream
+        # 不暴露哪些端点
+        exclude: env,beans,configprops
+  endpoint:
+    health:
+      # 是否展示健康检查详情
+      show-details: always
+  health:
+    redis:
+      enabled: false
+#eureka注册
+eureka:
+  client:
+    service-url:
+      # 指定eureka server通信地址，注意/eureka/小尾巴不能少
+      defaultZone: http://admin:admin@peer1:8761/eureka/,http://admin:admin@peer2:8762/eureka/
+  instance:
+    # 是否注册IP到eureka server，如不指定或设为false，那就回注册主机名到eureka server
+    prefer-ip-address: true
+feign:
+  client:
+    config:
+      default:
+        connectTime: 5000
+        readTimeout: 5000
+        #  NONE【性能最佳，适用于生产】：不记录任何日志（默认值）。
+        #  BASIC【适用于生产环境追踪问题】：仅记录请求方法、URL、响应状态代码以及执行时间。
+        #  HEADERS：记录BASIC级别的基础上，记录请求和响应的header。
+        #  FULL【比较适用于开发及测试环境定位问题】：记录请求和响应的header、body和元数据
+        loggerLevel: basic
+  hystrix:
+    enabled: true
+# sleuth
+logging:
+  level:
+    root: info
+    org.springframework.cloud.sleuth: DEBUG
+spring:
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      # 采样率，模式0.1，也就是10%，为了便于观察效果，改为1.0，也就是100%。生产环境建议保持默认。
+      probability: 1.0
